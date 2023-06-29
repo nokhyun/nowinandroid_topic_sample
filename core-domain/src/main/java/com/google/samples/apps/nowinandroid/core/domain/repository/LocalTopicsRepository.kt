@@ -28,10 +28,9 @@ import com.google.samples.apps.nowinandroid.core.network.NiANetwork
 import com.google.samples.apps.nowinandroid.core.network.NiaDispatchers
 import com.google.samples.apps.nowinandroid.core.network.model.NetworkTopic
 import kotlinx.coroutines.CoroutineDispatcher
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 /**
  * Room database backed implementation of the [TopicsRepository].
@@ -47,9 +46,7 @@ class LocalTopicsRepository @Inject constructor(
         topicDao.getTopicEntitiesStream()
             .map { it.map(TopicEntity::asExternalModel) }
 
-    override suspend fun getTopic(id: Int): Topic = withContext(ioDispatcher) {
-        topicDao.getTopicEntity(id).let(TopicEntity::asExternalModel)
-    }
+    override fun getTopic(id: Int): Flow<Topic> = topicDao.getTopicEntity(id).map(TopicEntity::asExternalModel)
 
     override suspend fun setFollowedTopicIds(followedTopicIds: Set<Int>) =
         niaPreferences.setFollowedTopicIds(followedTopicIds)

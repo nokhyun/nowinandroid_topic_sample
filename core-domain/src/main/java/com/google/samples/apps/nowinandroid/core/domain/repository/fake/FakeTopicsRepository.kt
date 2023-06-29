@@ -23,11 +23,11 @@ import com.google.samples.apps.nowinandroid.core.network.Dispatcher
 import com.google.samples.apps.nowinandroid.core.network.NiaDispatchers.IO
 import com.google.samples.apps.nowinandroid.core.network.fake.FakeDataSource
 import com.google.samples.apps.nowinandroid.core.network.model.NetworkTopic
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 /**
  * Fake implementation of the [TopicsRepository] that retrieves the topics from a JSON String, and
@@ -57,8 +57,8 @@ class FakeTopicsRepository @Inject constructor(
     }
         .flowOn(ioDispatcher)
 
-    override suspend fun getTopic(id: Int): Topic =
-        getTopicsStream().first().first { topic -> topic.id == id }
+    override fun getTopic(id: Int): Flow<Topic> =
+        getTopicsStream().map { it.first { topic -> topic.id == id } }
 
     override suspend fun setFollowedTopicIds(followedTopicIds: Set<Int>) =
         niaPreferences.setFollowedTopicIds(followedTopicIds)
